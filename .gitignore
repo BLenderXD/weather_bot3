@@ -1,0 +1,44 @@
+venv/
+__pycache__/
+weather_bot.db
+.env
+
+# Операционная система
+.DS_Store
+Thumbs.db
+*.lnk
+*.bak
+*.tmp
+*.swp
+ntuser.*
+
+# IDE и редакторы
+.idea/
+.vscode/
+*.iml
+
+# Python файлы
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.sqlite3
+*.db
+.env
+
+# Логи и кэш
+*.log
+.cache/
+.history/
+.ipynb_checkpoints/
+.jupyter/
+.matplotlib/
+sqlite_history
+
+# Виртуальное окружение
+venv/
+env/
+
+# Конфигурации и зависимости
+*.lock
