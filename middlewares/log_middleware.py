@@ -7,7 +7,6 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
-# Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
@@ -16,7 +15,7 @@ logging.basicConfig(
 load_dotenv()
 
 class LoggingMiddleware(BaseMiddleware):
-    _log_bot = None  # Статическая переменная для хранения бота
+    _log_bot = None 
 
     def __init__(self, main_bot: Bot):
         super().__init__()
