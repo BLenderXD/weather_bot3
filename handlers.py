@@ -26,7 +26,6 @@ async def show_welcome(update: Message | CallbackQuery, state: FSMContext, bot: 
     """Общая функция для отображения приветственного сообщения."""
     await state.clear()
     
-    # Определяем пользователя и тип апдейта
     user = update.from_user
     is_message = isinstance(update, Message)
     
@@ -36,7 +35,6 @@ async def show_welcome(update: Message | CallbackQuery, state: FSMContext, bot: 
         "👇 Выберите нужный пункт меню:</b>"
     )
 
-    # Если это сообщение, устанавливаем команды и отправляем новое сообщение с фото
     if is_message:
         await bot.set_my_commands(user_commands, scope=BotCommandScopeChat(chat_id=user.id))
         await update.answer_photo(
@@ -45,7 +43,7 @@ async def show_welcome(update: Message | CallbackQuery, state: FSMContext, bot: 
             reply_markup=main_menu,
             parse_mode="HTML"
         )
-    # Если это callback, редактируем сообщение и добавляем фото
+
     else:
         await update.message.answer_photo(
             photo=PHOTO_URL,
@@ -137,7 +135,7 @@ async def process_city_list(message: Message, state: FSMContext):
     else:
         not_found_list = ", ".join(not_found) if not_found else "указанные"
         kb = get_back_keyboard()
-        await message.answer(f"❌ Таких городов, как {not_found_list}, нет", reply_markup=kb)
+        await message.answer(f"<b>❌ Таких городов, как {not_found_list}, нет\n\n✍️ Попробуйте снова ввести название города или городов через запятую:</b>", reply_markup=kb, parse_mode="HTML")
 
 
 async def show_cities_page(message: Message | CallbackQuery, state: FSMContext):
@@ -145,11 +143,11 @@ async def show_cities_page(message: Message | CallbackQuery, state: FSMContext):
     
     if not cities:
         kb = get_back_keyboard()
-        text_out = "❌ Список городов пуст"
+        text_out = "<B>❌ Список городов пуст</B>"
         if isinstance(message, Message):
             await message.answer(text_out, reply_markup=kb)
         else:
-            await message.message.edit_text(text_out, reply_markup=kb)
+            await message.message.edit_text(text_out, reply_markup=kb, parse_mode="HTML")
         return
 
     ITEMS_PER_PAGE = 4
@@ -172,10 +170,8 @@ async def show_cities_page(message: Message | CallbackQuery, state: FSMContext):
             )
         ])
 
-    # Формируем клавиатуру
     keyboard_rows = weather_buttons.copy()
 
-    # Добавляем пагинацию только если больше одной страницы
     if total_pages > 1:
         prev_page = total_pages if current_page == 1 else current_page - 1
         next_page = 1 if current_page == total_pages else current_page + 1
@@ -186,7 +182,6 @@ async def show_cities_page(message: Message | CallbackQuery, state: FSMContext):
         ]
         keyboard_rows.append(nav_buttons)
 
-    # Кнопка "Вернуться" в меню
     keyboard_rows.append([InlineKeyboardButton(text="🔙 Вернуться", callback_data="back_to_menu")])
 
     weather_kb = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
@@ -219,7 +214,6 @@ async def callback_details(query: CallbackQuery, state: FSMContext):
     
     info = await get_detailed_weather(city_name)
 
-    # Кнопка "Вернуться" возвращает на страницу пагинации
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(
@@ -235,7 +229,7 @@ async def callback_details(query: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(States.waiting_for_cities), lambda c: c.data.startswith("action=none"))
 async def callback_none(query: CallbackQuery):
-    await query.answer()  # Просто заглушка для кнопки страницы
+    await query.answer()
 
 
 

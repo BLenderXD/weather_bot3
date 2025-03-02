@@ -9,38 +9,34 @@ from middlewares.log_middleware import LoggingMiddleware
 from handlers import router
 from weather import close_session  # Импортируем функцию закрытия сессии
 
-# Настройки логирования
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
-# Токен бота
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 
-# Создание бота с правильным parse_mode для aiogram 3.7+
 bot = Bot(token=TELEGRAM_BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-# Подключение middleware
 dp.update.middleware(LoggingMiddleware(bot))
 
-# Функция обработки завершения работы
+
 async def on_shutdown(dp: Dispatcher):
     """Закрытие сессий при завершении работы бота."""
     logging.info("Бот завершает работу...")
-    await close_session()  # Закрываем сессию aiohttp из weather.py
-    await bot.session.close()  # Закрываем сессию основного бота
+    await close_session()  
+    await bot.session.close()  
     logging.info("Все сессии закрыты.")
 
-# Функция запуска бота
+# запуск бота
 def main():
-    create_tables()  # Создаём таблицы в БД
-    dp.include_router(router)  # Подключаем маршруты
+    create_tables()  # cоздаём таблицы в БД
+    dp.include_router(router)  # подключаем маршруты
     
-    # Регистрируем обработчик завершения
+    # регистрируем обработчик завершения
     dp.shutdown.register(on_shutdown)
     
-    # Запускаем бота в режиме polling
+    # запускаем бота в режиме polling
     logging.info("Бот запущен!")
     dp.run_polling(bot, skip_updates=True)
 
